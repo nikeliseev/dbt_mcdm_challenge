@@ -28,4 +28,4 @@ select
     , spend
     , conv as total_conversions
     , null as video_views
-from twitter
+from bing
