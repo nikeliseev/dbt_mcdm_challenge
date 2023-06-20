@@ -14,4 +14,4 @@ twitter as (
     select * from {{ ref("src_promoted_tweets_twitter_all_data") }}
 )
 
-select * from fb
+select * from fb left join tiktok using (ad_id)
