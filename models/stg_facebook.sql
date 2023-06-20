@@ -25,6 +25,6 @@ select
     , null as revenue
     , shares
     , spend
-    , case when purchase = 0 then 0 else spend / purchase end as total_conversions
+    , purchase as total_conversions
     , null as video_views
 from fb
