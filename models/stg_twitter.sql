@@ -20,7 +20,6 @@ select
     , null as placement_id
     , null as post_click_conversions
     , null as post_view_conversions
-    , null as post_view_conversions
     , null as purchase
     , null as registrations
     , null as revenue

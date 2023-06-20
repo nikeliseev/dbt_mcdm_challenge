@@ -14,4 +14,10 @@ twitter as (
     select * from {{ ref("stg_twitter") }}
 )
 
-select fb.* from fb left join tiktok using (ad_id)
+select * from fb 
+union all
+select * from tiktok 
+union all
+select * from bing 
+union all
+select * from twitter 
