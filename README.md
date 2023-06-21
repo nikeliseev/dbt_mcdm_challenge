@@ -1,69 +1,128 @@
-# Marketing common data modelling challenge
-	Welcome to Marketing common data modelling challenge!
+# ads_basic_performance report
+ads_basic_performance report consists of 4 sources: raw data from Facebook, Twitter, Bing and TikTok ad platforms.
 
-## Task
-	At Improvado, we use marketing common data models (MCDM) to map data from various ad platforms into a single one. MCDM can help marketers with questions like: "Where clicks better on facebook or tiktok?"
+![graph](https://downloader.disk.yandex.ru/preview/bdb825879d4a1977c4e10b25ba4bd1e53794bc5d37bb7c6bc64bf0c7060050de/6492790c/N4GxGREnGdEAa6T7R-B5e_rjTx4rOWMnCky0Ay53auxrtMbJg_uOCalT-rCwtXxGjtOPBvdOAJqLC5m1cBYPpA%3D%3D?uid=0&filename=Screenshot%202023-06-21%20025449.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=0&tknv=v2&size=2048x2048)
 
-Imagine that MCDM-model behind dashboard, is lost somehow. You need to rebuilt it. You have:
-	— raw data from the ad systems (seeds folder),
-	- the MCDM table structure for this report, 
-	- and [dashboard](https://lookerstudio.google.com/reporting/fa668749-b82f-41a8-a12e-f7d9c0733b57/page/tEnnC)
+Each source have their stage model, in which data is prepared for use. You can find all the sql-queries for creating stage-models below.
 
+<details>
+		<summary>stg queries</summary>
+	
+	/* stg_facebook */
+	select 
+	      ad_id
+	    , add_to_cart
+	    , adset_id
+	    , campaign_id
+	    , channel
+	    , clicks
+	    , comments
+	    , creative_id
+	    , date
+	    , views + clicks + comments + likes + shares as engagements
+	    , impressions
+	    , mobile_app_install as installs
+	    , likes
+	    , inline_link_clicks as link_clicks
+	    , null as placement_id
+	    , null as post_click_conversions
+	    , null as post_view_conversions
+	    , purchase
+	    , complete_registration as registrations
+	    , null as revenue
+	    , shares
+	    , spend
+	    , purchase as total_conversions
+	    , null as video_views
+	from src_ads_creative_facebook_all_data
 
-In this situation, we've got checklist that you can follow (or not):
-	- Begin a new project in dbt Cloud, utilizing Google Big Query as the DWH.
-	- Use the raw data from the ad platforms and the MCDM table structure for the ads_basic_performance report.
+	/* stg_tiktok */
+	select 
+	      ad_id
+	    , add_to_cart
+	    , adgroup_id as adset_id
+	    , campaign_id
+	    , channel
+	    , clicks
+	    , null as comments
+	    , null as creative_id
+	    , date
+	    , null as engagements
+	    , impressions
+	    , rt_installs + skan_app_install as installs
+	    , null as likes
+	    , null as link_clicks
+	    , null as placement_id
+	    , null as post_click_conversions
+	    , null as post_view_conversions
+	    , purchase
+	    , registrations
+	    , null as revenue
+	    , null as shares
+	    , spend
+	    , conversions + skan_conversion as total_conversions
+	    , video_views
+	from src_ads_tiktok_ads_all_data
+ 
+	/* stg_twitter */
+ 	select 
+	      null as ad_id
+	    , null as add_to_cart
+	    , null as adset_id
+	    , campaign_id
+	    , channel
+	    , clicks
+	    , comments
+	    , null as creative_id
+	    , date
+	    , engagements
+	    , impressions
+	    , null as installs
+	    , likes
+	    , url_clicks as link_clicks
+	    , null as placement_id
+	    , null as post_click_conversions
+	    , null as post_view_conversions
+	    , null as purchase
+	    , null as registrations
+	    , null as revenue
+	    , retweets as shares
+	    , spend
+	    , null as total_conversions
+	    , video_total_views as video_views
+	from src_promoted_tweets_twitter_all_data
 
-### How to Submit
-please provide answer in the [typeform](https://improvado.typeform.com/to/efqlu4kP)
--   A link to your dbt Cloud repository that contains the completed MCDM for the ads_basic_performance report.
--   A link to the recreated dashboard.
--   A brief set of instructions (in md file in your repo) for adding data from new ad platforms into your MCDM.
+ 	/* stg_bing */
+	select 
+	      ad_id
+	    , null as add_to_cart
+	    , adset_id
+	    , campaign_id
+	    , channel
+	    , clicks
+	    , null as comments
+	    , null as creative_id
+	    , date
+	    , null as engagements
+	    , imps as impressions
+	    , null as installs
+	    , null as likes
+	    , null as link_clicks
+	    , null as placement_id
+	    , null as post_click_conversions
+	    , null as post_view_conversions
+	    , null as purchase
+	    , null as registrations
+	    , revenue
+	    , null as shares
+	    , spend
+	    , conv as total_conversions
+	    , null as video_views
+	from src_ads_bing_all_data
+</details>
 
-## Hints:
-	- *Cost per engage* is just a spended sum divided by sum of engagements
-	- *Conversion cost* is calculated by dividing sum of spended by total conversions count
-	- *Impressions by channel* is a sum of impressions for each channel
-	- *CPC* gets like sum of spended divided by clicks count
+All stage-models combined in one view - fact_mcdm_paid_ads, which you can use for analytics and dashboards design.
 
-### Tools
-To complete this task, you might need the following tools:
--   dbt Cloud
--   Google Big Query
--   Google Looker Studio
+Link to dashboard.
+Link to dbt Cloud.
 
-### Tool Instructions
-To help you get started, here are some resources on how to use the necessary tools:
--   dbt Courses:
-    -   [dbt Fundamentals](https://courses.getdbt.com/courses/fundamentals). Relevant chapters include:
-        -   Setting up dbt Cloud (17 minutes)
-        -   Models and Sources (40 minutes)
-        -   [dbt Cloud and BigQuery for Admins](https://courses.getdbt.com/courses/dbt-cloud-and-bigquery-for-admins) (35 minutes)
--   [How to Use Google BigQuery for FREE](https://levelup.gitconnected.com/how-to-use-google-bigquery-for-free-9c2a65e3a78c#)
-- How to create dashboard Google Looker Studio with Google Big Query
-		![](https://github.com/technomonah/dbt_mcdm_challenge/blob/main/how_to_export_gbq_to_looker.gif)
-
-
-### Additional Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- [Short overview](https://improvado.io/products/mcdm) for Improvado MCDM
-
-### How to Use the Repository
-This is the foundational repository for your project. Clone it and start your dbt Cloud from it.
-
-The repository includes raw data from various ad platforms, as well as the MCDM structure for the ads_basic_performance report, which are provided as seeds:
-
--   src_ads_bing_all_data
--   src_ads_creative_facebook_all_data
--   src_ads_tiktok_ads_all_data
--   src_promoted_tweets_twitter_all_data
--   mcdm_paid_ads_basic_performance_structure
-
-To build the seeds, run `dbt seed` in the dbt Cloud console. Once the seeds have been built, you can access the data using `ref()`. For example, you can use `select * from {{ ref('src_ads_bing_all_data')}}` to access data from the `src_ads_bing_all_data` seed.
-
-### Q&A
-	Q: How to validate results for my model? 
-	A: Compare your dashboard with the dashboard from task. If some numbers doesn't match, then some fiels in your model got incorrect mapped  
-
-	Q: What if there're no MCDM sctructure field in raw datasource data?
-	A: So you started understending the main goal of this task :-)	Suggest wich field or fields corresponds to MCDM ones by their meaning. If there're no such fields, then probably datasource just doesnt got them
