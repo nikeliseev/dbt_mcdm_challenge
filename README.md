@@ -123,6 +123,5 @@ Each source have their stage model, in which data is prepared for use. You can f
 
 All stage-models combined in one view - fact_mcdm_paid_ads, which you can use for analytics and dashboards design.
 
-Link to dashboard.
-Link to dbt Cloud.
+[Link to dashboard](https://lookerstudio.google.com/s/l9IerrM22f8)
 
